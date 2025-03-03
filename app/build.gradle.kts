@@ -38,7 +38,25 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    packagingOptions{
+        exclude("META-INF/DEPENDENCIES")
+    }
+
+
+    packagingOptions {
+        exclude ("META-INF/INDEX.LIST")
+    }
+
+    packagingOptions {
+        exclude ("META-INF/io.netty.versions.properties")
+    }
+
+
 }
+
+
+
 
 dependencies {
 
@@ -49,10 +67,17 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.cloudinary:cloudinary-android:2.1.0")
     implementation("com.squareup.picasso:picasso:2.8")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.11.0")
+    implementation("com.karumi:dexter:6.2.3")
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.19.0")
 
 }

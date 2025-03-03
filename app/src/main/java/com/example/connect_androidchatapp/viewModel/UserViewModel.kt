@@ -22,7 +22,7 @@ class UserViewModel(val repo: UserRepository) {
     }
 
     fun forgetPassword(email: String, callback: (Boolean, String) -> Unit) {
-        // Implement password reset functionality
+        repo.forgetPassword(email, callback)
     }
 
     fun addUserToDatabase(userID: String, userModel: UserModel, callback: (Boolean, String) -> Unit) {
@@ -34,7 +34,7 @@ class UserViewModel(val repo: UserRepository) {
     }
 
     fun editProfile(userId: String, data: MutableMap<String, Any>, callback: (Boolean, String) -> Unit) {
-        // Implement profile edit functionality
+        repo.editProfile(userId,data,callback)
     }
 
     fun getCurrentUSer(): FirebaseUser? {
@@ -52,5 +52,9 @@ class UserViewModel(val repo: UserRepository) {
 
     fun uploadImage(context: Context,imageUri: Uri,callback: (String?) -> Unit){
         repo.uploadImage(context,imageUri,callback)
+    }
+
+    fun saveUserFCMToken() {
+        repo.saveUserFCMToken()
     }
 }

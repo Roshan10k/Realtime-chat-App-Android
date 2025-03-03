@@ -6,5 +6,7 @@ data class UserModel(
     var name:String="",
     var password: String = "",
     var imageUrl: String = "",
+    var fcmToken: String = "",
+
 ) {
 }

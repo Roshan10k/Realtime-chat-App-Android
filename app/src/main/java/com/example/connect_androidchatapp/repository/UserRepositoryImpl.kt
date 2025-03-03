@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.OpenableColumns
+import android.util.Log
 import com.cloudinary.Cloudinary
 import com.cloudinary.utils.ObjectUtils
 import com.example.connect_androidchatapp.model.UserModel
@@ -15,6 +16,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
 import java.io.InputStream
 import java.util.concurrent.Executors
 
@@ -49,11 +51,18 @@ class UserRepositoryImpl:UserRepository {
             }
         }
 
-        override fun forgetPassword(email: String, callback: (Boolean, String) -> Unit) {
-            TODO("Not yet implemented")
+    override fun forgetPassword(email: String, callback: (Boolean, String) -> Unit) {
+        auth.sendPasswordResetEmail(email).addOnCompleteListener {
+            if (it.isSuccessful) {
+                callback(true, "Password reset link sent to $email")
+            } else {
+                callback(false, it.exception?.message.toString())
+            }
         }
+    }
 
-        override fun addUserToDatabase(
+
+    override fun addUserToDatabase(
             userID: String,
             userModel: UserModel,
             callback: (Boolean, String) -> Unit
@@ -76,15 +85,28 @@ class UserRepositoryImpl:UserRepository {
             }
         }
 
-        override fun editProfile(
-            userId: String,
-            data: MutableMap<String, Any>,
-            callback: (Boolean, String) -> Unit
-        ) {
-            TODO("Not yet implemented")
-        }
+    override fun editProfile(
+        userId: String,
+        data: MutableMap<String, Any>,
+        callback: (Boolean, String) -> Unit
+    ) {
+        Log.d("EditProfile", "Updating profile for user: $userId with data: $data") // Debug log
 
-        override fun getCurrentUSer(): FirebaseUser? {
+        reference.child(userId).updateChildren(data)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("EditProfile", "Update task completed: success")
+                    callback(true, "Profile updated successfully")
+                } else {
+                    Log.e("EditProfile", "Update failed", task.exception)
+                    callback(false, task.exception?.message ?: "Failed to update profile")
+                }
+            }
+    }
+
+
+
+    override fun getCurrentUSer(): FirebaseUser? {
 
             return auth.currentUser
         }
@@ -159,6 +181,14 @@ class UserRepositoryImpl:UserRepository {
             }
         }
         return fileName
+    }
+
+    override fun saveUserFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+            auth.currentUser?.uid?.let { uid ->
+                reference.child(uid).child("fcmToken").setValue(token)
+            }
+        }
     }
 }
 
